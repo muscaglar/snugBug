@@ -26,9 +26,6 @@ class ViewController: UIViewController{
 
     @IBOutlet weak var slider: UISlider!
     
-    @IBAction func lightUp(_ sender: Any) {
-        self.toggleFlashlight()
-    }
     
     @IBAction func slideLight(_ sender: Any) {
         guard let device = AVCaptureDevice.default(for: AVMediaType.video) else { return }
@@ -90,50 +87,28 @@ class ViewController: UIViewController{
      {
         var i : Double = 0
         var x = [Float]()
-        x.append(1)
-        while (i<4)
-        {   x.append( 1.1 * (1 - pow(Float(M_E), Float(-0.5 * i) ) ))
-            i = i + 0.1   }
+        //x.append(1)
+        while (i<=4)
+        {   x.append(-0.01306 + 0.01306 * pow(Float(M_E), Float( i) )) 
+            i = i + 0.001
+        }
         let xNorm = Array(x.sorted())
         return xNorm
     }
     
      func getDecayArray() -> [Float]
      {
-        var i : Double = 0
+        var i : Double = 4
         var x = [Float]()
-        x.append(1)
-        while (i<6)
-        {   x.append( 1 -  pow(Float(M_E), Float(-0.5 * i) ) )
-            i = i + 0.1   }
+        //x.append(1)
+        while (i<=10)
+        {   x.append(0.742 - 0.005 * pow(Float(M_E), Float(0.5*i) )) // 1 -  pow(Float(M_E), Float(-0.5 * i) ) )
+            i = i + 0.001
+        }
         let xRev = Array(x.sorted().reversed())
         return xRev
     }
  
-    /*
-     func getBrightenArray() -> [Float]
-     {
-        var i : Double = 0
-        var x = [Float]()
-        x.append(1)
-        while (i<2)
-        {   x.append( 1.4 * (1 - pow(Float(M_E), Float(-0.5 * i) ) ))
-            i = i + 0.1   }
-        let xNorm = Array(x.sorted())
-        return xNorm
-    }
-    
-     func getDecayArray() -> [Float]
-     {
-        var i : Double = 0
-        var x = [Float]()
-        x.append(1)
-        while (i<4)
-        {   x.append( 1 -  pow(Float(M_E), Float(-0.5 * i) ) )
-            i = i + 0.1   }
-        let xRev = Array(x.sorted().reversed())
-        return xRev
-    }*/
     
     func begin(device: AVCaptureDevice)
     {
@@ -144,7 +119,7 @@ class ViewController: UIViewController{
         let z = z2.all(where: { $0 > 0 })
 
         var i = 0
-        let seconds = 0.1
+        let seconds = 0.001
         
         Timer.scheduledTimer(withTimeInterval: TimeInterval(seconds), repeats: true)
         {timer in
@@ -205,66 +180,7 @@ class ViewController: UIViewController{
     
     private let session = AVCaptureSession()
     
-    private func flashOn(device:AVCaptureDevice)
-    {
-        do{
-            if (device.hasTorch)
-            {
-                try device.lockForConfiguration()
-                device.torchMode = .on
-                device.flashMode = .on
-                try device.setTorchModeOn(level: 0.5)
-                device.unlockForConfiguration()
-            }
-        }catch{
-            //DISABEL FLASH BUTTON HERE IF ERROR
-            print("Device tourch Flash Error ");
-        }
-    }
-    
-    private func flashOff(device:AVCaptureDevice)
-       {
-           do{
-               if (device.hasTorch){
-                   try device.lockForConfiguration()
-                   device.torchMode = .on
-                   device.flashMode = .on
-                try device.setTorchModeOn(level: 2.0)
-                   device.unlockForConfiguration()
-               }
-           }catch{
-               //DISABEL FLASH BUTTON HERE IF ERROR
-               print("Device tourch Flash Error ");
-           }
-       }
-    
-    
-    func toggleFlashlight() {
-        var device : AVCaptureDevice!
 
-       
-            let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDuoCamera], mediaType: AVMediaType.video, position: .unspecified)
-            let devices = videoDeviceDiscoverySession.devices
-            device = devices.first!
-
-       
-
-        if ((device as AnyObject).hasMediaType(AVMediaType.video))
-        {
-            if (device.hasTorch)
-            {
-                self.session.beginConfiguration()
-                //self.objOverlayView.disableCenterCameraBtn();
-                if device.isTorchActive == false {
-                    self.flashOn(device: device)
-                } else {
-                    self.flashOff(device: device);
-                }
-                //self.objOverlayView.enableCenterCameraBtn();
-                self.session.commitConfiguration()
-            }
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
